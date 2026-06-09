@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>눈깜빡임 판별기</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    
+    <style>
+        /* 프리미엄 다크 그라데이션 배경 */
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #2e1065 100%);
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 글래스모피즘 락커룸 카드 스타일 */
+        .app-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                        0 0 40px rgba(99, 102, 241, 0.1);
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 메인 그래디언트 제목 */
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* 서브타이틀 */
+        .subtitle {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 32px;
+        }
+
+        /* 하이테크 네온 버튼 */
+        button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: #ffffff;
+            border: none;
+            padding: 14px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 32px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 버튼 호버 및 액션 효과 */
+        button:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* 웹캠 컨테이너 네온 박스 */
+        #webcam-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 32px auto;
+            width: 200px;
+            height: 200px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* 웹캠 캔버스 스타일 */
+        #webcam-container canvas {
+            border-radius: 14px;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+
+        /* 결과창 패널 */
+        #label-container {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            padding: 16px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 결과 항목 스타일 */
+        #label-container div {
+            font-family: 'Fira Code', 'Courier New', monospace; /* 수치 표현을 위한 모노스페이스 */
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            letter-spacing: -0.3px;
+        }
+
+        /* 텍스트 구분을 위한 미세한 라인 */
+        #label-container div:not(:last-child) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-card">
+        <h1>눈깜빡임 판별기</h1>
+        <div class="subtitle">Teachable Machine AI</div>
+        
+        <button type="button" onclick="init()">START ANALYSIS</button>
+        <div id="webcam-container"></div>
+        <div id="label-container"></div>
+    </div>
+
+    <script type="text/javascript">
+        
+        const URL = "https://teachablemachine.withgoogle.com/models/0FliLZBUk/";
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        //1. 버튼을 누르면 처음 init() 실행
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            const flip = true; 
+            webcam = new tmImage.Webcam(200, 200, flip); 
+            await webcam.setup(); 
+            await webcam.play();
+
+            //2. loop함수 동작을 예약하는 코드(화면이 갱신된후 1oop함수 실행)
+            window.requestAnimationFrame(loop);
+
+            //3. 버튼을 클릭했을때 동적으로 div 상자를 추가함
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
+        
+        //4. requestAnimationFrame 예약해둔 loop함수 실행함
+        async function loop() {
+            webcam.update();
+            
+            //5. predict함수가 호출됨
+            await predict();
+            //7. loop함수 안에서 또다른 loop 함수를 호출 예약하면서
+            // 브라우저를 끄지 전까지 계속 무한루프를 반복함.
+            window.requestAnimationFrame(loop);
+        }
+
+            
+        async function predict() {
+            //6. 모델이 웹캠의 화면을 예측하는 중요한 동작을 수행
+            const prediction = await model.predict(webcam.canvas);
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
+        }
+    </script>
+
+</body>
+</html>
