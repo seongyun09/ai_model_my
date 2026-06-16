@@ -3,157 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>눈깜빡임 판별기</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    
+    <title>Occult AI Ritual : Grand Domain Expansion</title>
     <style>
-        /* 프리미엄 다크 그라데이션 배경 */
+        /* [기본 스타일] 오컬트/판타지 감성의 심연 배경 */
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #2e1065 100%);
-            color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle, #120720 0%, #05020a 100%);
+            color: #e2d5f0;
+            font-family: 'Cinzel', 'Noto Sans KR', serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-
-        /* 글래스모피즘 락커룸 카드 스타일 */
-        .app-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px 30px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
-                        0 0 40px rgba(99, 102, 241, 0.1);
-            text-align: center;
-            max-width: 380px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        /* 메인 그래디언트 제목 */
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            background: linear-gradient(to right, #6366f1, #a855f7, #ec4899);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0 0 6px 0;
-            letter-spacing: -0.5px;
-        }
-
-        /* 서브타이틀 */
-        .subtitle {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 32px;
-        }
-
-        /* 하이테크 네온 버튼 */
-        button {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: #ffffff;
-            border: none;
-            padding: 14px 0;
-            font-size: 1rem;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 32px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* 버튼 호버 및 액션 효과 */
-        button:hover {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
-            transform: translateY(-2px);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        /* 웹캠 컨테이너 네온 박스 */
-        #webcam-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 32px auto;
-            width: 200px;
-            height: 200px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
             overflow: hidden;
             position: relative;
-            border: 2px solid rgba(99, 102, 241, 0.2);
-            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+            transition: background 1s ease;
         }
 
-        /* 웹캠 캔버스 스타일 */
-        #webcam-container canvas {
-            border-radius: 14px;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
+        /* 기본 마법진 광운 효과 */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0; pointer-events: none;
+            transition: opacity 1s ease;
         }
 
-        /* 결과창 패널 */
-        #label-container {
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 16px;
-            padding: 16px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        /* ====================================================
+            👁️ 1. 무량공처 영역 전개 (Active) 스타일 
+        ==================================================== */
+        .void-background {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff;
+            background-image: 
+                radial-gradient(circle at 50% 50%, transparent 60%, #000 60.5%),
+                repeating-radial-gradient(circle at 50% 50%, #fff 0px, #fff 10px, #000 11px, #000 20px);
+            opacity: 0; z-index: 0; pointer-events: none;
+            transition: opacity 1.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+            filter: contrast(50);
+        }
+        .black-hole {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 320px; height: 320px;
+            background: #000; border-radius: 50%; z-index: 1; pointer-events: none;
+            box-shadow: 0 0 0 15px #fff, 0 0 0 35px #000, 0 0 60px 50px rgba(255, 255, 255, 0.9);
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* 결과 항목 스타일 */
-        #label-container div {
-            font-family: 'Fira Code', 'Courier New', monospace; /* 수치 표현을 위한 모노스페이스 */
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #cbd5e1;
-            padding: 10px 0;
+        body.void-active { background: #000 !important; color: #000 !important; }
+        body.void-active::before { opacity: 0; }
+        body.void-active .void-background { opacity: 1; }
+        body.void-active .black-hole { transform: translate(-50%, -50%) scale(1); animation: absorb 6s infinite linear; }
+        body.void-active .altar-container { background: rgba(255, 255, 255, 0.9); border: 5px double #000; box-shadow: 0 0 40px rgba(0, 0, 0, 0.8); color: #000; }
+        body.void-active #webcam-container { border-color: #000; box-shadow: 0 0 20px #000; }
+        body.void-active #label-container div { background: #fff; border: 1px solid #000; color: #000; }
+        body.void-active .selected-class { background: #000 !important; color: #fff !important; border-color: #000 !important; box-shadow: 0 0 15px #000 !important;}
+
+        /* ====================================================
+            ⛩️ 2. 복마어주자 영역 전개 (Active) 스타일 
+        ==================================================== */
+        .shrine-background {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #200404 0%, #050000 100%);
+            opacity: 0; z-index: 0; pointer-events: none;
+            transition: opacity 1.2s ease;
+        }
+        .shrine-structure {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            width: 500px; height: 500px;
+            opacity: 0; z-index: 1; pointer-events: none;
+            transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: drop-shadow(0 0 30px #ff0033);
+        }
+
+        body.shrine-active { background: #050000 !important; }
+        body.shrine-active::before { opacity: 0; }
+        body.shrine-active .shrine-background { opacity: 1; }
+        body.shrine-active .shrine-structure { opacity: 0.35; transform: translate(-50%, -50%) scale(1.1); }
+        body.shrine-active .altar-container { background: rgba(15, 0, 0, 0.85); border: 2px solid #ff0033; box-shadow: 0 0 35px rgba(255, 0, 51, 0.4); color: #ffb3b3; }
+        body.shrine-active body > div:first-of-type { color: #ff0033; text-shadow: 0 0 10px #ff0033; }
+        body.shrine-active #webcam-container { border-color: #ff0033; box-shadow: 0 0 25px rgba(255, 0, 51, 0.6); }
+        body.shrine-active #label-container div { background: rgba(30, 5, 5, 0.8); border: 1px solid #ff0033; color: #ffcccc; }
+        body.shrine-active .selected-class { background: #ff0033 !important; color: #fff !important; border-color: #ff0033 !important; box-shadow: 0 0 25px #ff0033 !important;}
+
+        /* ====================================================
+            🐺 3. 간합암예정 영역 전개 (Active) 스타일 
+        ==================================================== */
+        .shadow-swamp {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, #020617 0%, #090d16 50%, #020205 100%);
+            opacity: 0; z-index: 0; pointer-events: none;
+            transition: opacity 1s ease;
+        }
+        .shadow-waves {
+            position: absolute;
+            bottom: -50px; left: 0; width: 100%; height: 250px;
+            opacity: 0; z-index: 1; pointer-events: none;
+            fill: #000000;
+            filter: drop-shadow(0 -15px 25px rgba(13, 148, 136, 0.35));
+            transform: translateY(100px);
+            transition: all 1.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+        }
+
+        body.shadow-active { background: #020617 !important; }
+        body.shadow-active::before { opacity: 0; }
+        body.shadow-active .shadow-swamp { opacity: 1; }
+        body.shadow-active .shadow-waves { opacity: 0.85; transform: translateY(0); animation: wave-flow 4s infinite alternate ease-in-out; }
+        body.shadow-active .altar-container { background: rgba(4, 47, 46, 0.35); border: 2px solid #0d9488; box-shadow: 0 0 35px rgba(13, 148, 136, 0.5); color: #ccfbf1; }
+        body.shadow-active body > div:first-of-type { color: #2dd4bf; text-shadow: 0 0 15px rgba(45, 212, 191, 0.8); }
+        body.shadow-active #webcam-container { border-color: #0d9488; box-shadow: 0 0 30px rgba(13, 148, 136, 0.7); }
+        body.shadow-active #label-container div { background: rgba(2, 44, 43, 0.7); border: 1px solid #14b8a6; color: #99f6e4; }
+        body.shadow-active .selected-class { background: #0d9488 !important; color: #fff !important; border-color: #14b8a6 !important; box-shadow: 0 0 25px #0d9488 !important;}
+
+        @keyframes wave-flow {
+            0% { transform: scaleY(1) rotate(0deg); }
+            100% { transform: scaleY(1.15) cubic-bezier(0.445, 0.05, 0.55, 0.95) rotate(1deg); }
+        }
+        /* ==================================================== */
+
+        /* 전체를 감싸는 오컬트 제단 컨테이너 */
+        .altar-container {
             display: flex;
-            justify-content: space-between;
-            letter-spacing: -0.3px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            background: rgba(15, 7, 25, 0.4);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            transition: all 1s ease;
         }
 
-        /* 텍스트 구분을 위한 미세한 라인 */
-        #label-container div:not(:last-child) {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        /* 타이틀 스타일 */
+        body > div:first-of-type {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #b794f4;
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+            margin-bottom: 25px;
+            transition: all 1s ease;
+        }
+
+        /* 스타트 버튼 */
+        button {
+            background: rgba(20, 10, 35, 0.8);
+            color: #c084fc;
+            border: 2px solid #6b21a8;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 30px;
+            box-shadow: 0 0 15px rgba(147, 51, 234, 0.4), inset 0 0 10px rgba(147, 51, 234, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        button:hover {
+            color: #fff;
+            border-color: #a855f7;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.8), inset 0 0 15px rgba(168, 85, 247, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* 웹캠 컨테이너 */
+        #webcam-container {
+            margin-top: 25px;
+            border: 3px solid #4a1d96;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+            transition: all 1s ease;
+            display: inline-block;
+        }
+
+        #webcam-container canvas {
+            display: block;
+            transform: scaleX(-1);
+        }
+
+        /* 마법 마나 게이지 바 */
+        .gauge-wrapper {
+            display: none;
+            width: 200px;
+            background: rgba(30, 15, 50, 0.6);
+            border: 1px solid #6b21a8;
+            height: 22px;
+            margin-top: 20px;
+            border-radius: 11px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(147, 51, 234, 0.4);
+        }
+
+        #gauge-bar {
+            width: 0%; height: 100%;
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            box-shadow: 0 0 10px #ec4899;
+            transition: width 0.1s linear;
+        }
+
+        #gauge-text {
+            position: absolute;
+            width: 100%; text-align: center;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75rem; color: #e2d5f0; font-weight: bold;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* 결과창 라벨 스타일 */
+        #label-container {
+            margin-top: 25px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #label-container div {
+            background: rgba(15, 7, 25, 0.6);
+            border: 1px solid rgba(107, 33, 168, 0.5);
+            padding: 12px; border-radius: 8px;
+            font-size: 1rem; letter-spacing: 1px; color: #d8b4fe;
+            box-shadow: inset 0 0 10px rgba(147, 51, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .selected-class {
+            border: 2px solid #ec4899 !important;
+            background: rgba(236, 72, 153, 0.25) !important;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6), inset 0 0 10px rgba(236, 72, 153, 0.3) !important;
+            color: #ffffff !important;
+        }
+
+        @keyframes absorb {
+            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="app-card">
-        <h1>눈깜빡임 판별기</h1>
-        <div class="subtitle">Teachable Machine AI</div>
-        
-        <button type="button" onclick="init()">START ANALYSIS</button>
+    <div class="void-background"></div>
+    <div class="black-hole"></div>
+
+    <div class="shrine-background"></div>
+    <div class="shrine-structure">
+        <svg viewBox="0 0 100 100" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 90 H90 V95 H10 Z" />
+            <path d="M20 83 H80 V90 H20 Z" />
+            <path d="M32 45 H36 V83 H32 Z" />
+            <path d="M64 45 H68 V83 H64 Z" />
+            <path d="M48 45 H52 V83 H48 Z" />
+            <path d="M15 45 C 30 42, 70 42, 85 45 C 75 48, 25 48, 15 45 Z" />
+            <path d="M28 25 H72 V42 H28 Z" fill="#0c0101"/>
+            <path d="M38 25 H41 V42 H38 Z" />
+            <path d="M59 25 H62 V42 H59 Z" />
+            <path d="M5 23 C 25 10, 75 10, 95 23 C 80 20, 20 20, 5 23 Z" />
+            <path d="M45 5 H55 V20 H45 Z" />
+            <circle cx="50" cy="33" r="3" fill="#ff0033" />
+            <circle cx="43" cy="33" r="1.5" fill="#ff0033" />
+            <circle cx="57" cy="33" r="1.5" fill="#ff0033" />
+        </svg>
+    </div>
+
+    <div class="shadow-swamp"></div>
+    <svg class="shadow-waves" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,144C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+
+    <div class="altar-container">
+        <div>Teachable Machine Image Model</div>
+        <button type="button" onclick="init()">Start</button>
         <div id="webcam-container"></div>
+        
+        <div class="gauge-wrapper" id="gauge-wrapper">
+            <div id="gauge-bar"></div>
+            <div id="gauge-text">공명 대기 중...</div>
+        </div>
+
         <div id="label-container"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
-        
-        const URL = "https://teachablemachine.withgoogle.com/models/0FliLZBUk/";
+        const URL = "https://teachablemachine.withgoogle.com/models/evxCOgcOh/";
 
         let model, webcam, labelContainer, maxPredictions;
+        let currentTopClass = "";
+        let topClassStartTime = 0;
 
-        //1. 버튼을 누르면 처음 init() 실행
+        let isDomainActive = false;
+        let domainActivationTime = 0;
+        let activeDomainName = "";
+
+        // 🗣️ [신규 함수] 브라우저 웹 스피치 API를 활용한 TTS 함수
+        function castSpellTTS(spellText) {
+            // 연속 호출 시 소리가 겹치지 않도록 이전 출력 초기화
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(spellText);
+            utterance.lang = 'ko-KR'; // 한국어 설정
+            utterance.rate = 0.85;    // 약간 느린 영창 속도
+            utterance.pitch = 0.8;     // 가라앉은 주술적인 목소리 톤
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
@@ -165,40 +340,126 @@
             webcam = new tmImage.Webcam(200, 200, flip); 
             await webcam.setup(); 
             await webcam.play();
-
-            //2. loop함수 동작을 예약하는 코드(화면이 갱신된후 1oop함수 실행)
             window.requestAnimationFrame(loop);
 
-            //3. 버튼을 클릭했을때 동적으로 div 상자를 추가함
             document.getElementById("webcam-container").appendChild(webcam.canvas);
+            document.getElementById("gauge-wrapper").style.display = "block";
+
             labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) { // and class labels
+            for (let i = 0; i < maxPredictions; i++) { 
                 labelContainer.appendChild(document.createElement("div"));
             }
         }
-        
-        //4. requestAnimationFrame 예약해둔 loop함수 실행함
+
         async function loop() {
-            webcam.update();
-            
-            //5. predict함수가 호출됨
+            webcam.update(); 
             await predict();
-            //7. loop함수 안에서 또다른 loop 함수를 호출 예약하면서
-            // 브라우저를 끄지 전까지 계속 무한루프를 반복함.
             window.requestAnimationFrame(loop);
         }
 
-            
         async function predict() {
-            //6. 모델이 웹캠의 화면을 예측하는 중요한 동작을 수행
             const prediction = await model.predict(webcam.canvas);
+            const gaugeBar = document.getElementById("gauge-bar");
+            const gaugeText = document.getElementById("gauge-text");
+
+            if (isDomainActive) {
+                let activeElapsed = Date.now() - domainActivationTime;
+
+                if (activeElapsed >= 10000) {
+                    isDomainActive = false;
+                    currentTopClass = "";
+                    topClassStartTime = Date.now();
+                    activeDomainName = "";
+                    document.body.classList.remove("void-active", "shrine-active", "shadow-active");
+                    
+                    // 10초 유지 시간이 종료되면 흘러나오는 보이스 강제 취소
+                    window.speechSynthesis.cancel();
+
+                    gaugeBar.style.width = "0%";
+                    gaugeText.innerHTML = "공명 대기 중...";
+                    gaugeBar.style.background = "linear-gradient(90deg, #a855f7, #ec4899)";
+                } else {
+                    let remainingSeconds = Math.ceil((10000 - activeElapsed) / 1000);
+                    gaugeText.innerHTML = `💥 영역 유지 중... ${remainingSeconds}s`;
+                    gaugeBar.style.width = ((10000 - activeElapsed) / 10000 * 100) + "%";
+                    gaugeBar.style.background = "linear-gradient(90deg, #ff0055, #9333ea)";
+                    
+                    for (let i = 0; i < maxPredictions; i++) {
+                        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                        labelContainer.childNodes[i].innerHTML = classPrediction;
+                        
+                        if (prediction[i].className === activeDomainName) {
+                            labelContainer.childNodes[i].classList.add("selected-class");
+                        } else {
+                            labelContainer.childNodes[i].classList.remove("selected-class");
+                        }
+                    }
+                    return; 
+                }
+            }
+
+            let highestIndex = 0;
+            let highestProbability = -1;
+
             for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction =
-                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                if (prediction[i].probability > highestProbability) {
+                    highestProbability = prediction[i].probability;
+                    highestIndex = i;
+                }
+            }
+
+            let highestClass = prediction[highestIndex].className;
+
+            if (currentTopClass !== highestClass) {
+                currentTopClass = highestClass;
+                topClassStartTime = Date.now();
+            }
+
+            let elapsed = Date.now() - topClassStartTime;
+            let progressPercent = Math.min((elapsed / 5000) * 100, 100);
+
+            gaugeBar.style.width = progressPercent + "%";
+            gaugeText.innerHTML = `주력 동조 중... ${(elapsed / 1000).toFixed(1)}s`;
+            gaugeBar.style.background = "linear-gradient(90deg, #a855f7, #ec4899)";
+
+            let isLocked = elapsed >= 5000;
+
+            if (isLocked) {
+                // 🗣️ [TTS 연동 추가] 비주술사를 제외한 각 영역전개 발동 프레임에 대사 매칭
+                if (highestClass.includes("무량공처")) {
+                    document.body.classList.add("void-active");
+                    isDomainActive = true;
+                    domainActivationTime = Date.now();
+                    activeDomainName = highestClass;
+                    castSpellTTS("영역 전개. 무량 공처.");
+                } 
+                else if (highestClass.includes("복마어주자")) {
+                    document.body.classList.add("shrine-active");
+                    isDomainActive = true;
+                    domainActivationTime = Date.now();
+                    activeDomainName = highestClass;
+                    castSpellTTS("영역 전개. 복마 어주 자.");
+                } 
+                else if (highestClass.includes("감함압예정")) {
+                    document.body.classList.add("shadow-active");
+                    isDomainActive = true;
+                    domainActivationTime = Date.now();
+                    activeDomainName = highestClass;
+                    castSpellTTS("영역 전개. 간합 암예 정.");
+                }
+                // 💡 "비주술사" 클래스는 위 조건문에 도달하지 않으므로 음성이 출력되지 않습니다.
+            }
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
                 labelContainer.childNodes[i].innerHTML = classPrediction;
+                labelContainer.childNodes[i].classList.remove("selected-class");
+
+                if (isLocked && i === highestIndex) {
+                    labelContainer.childNodes[i].classList.add("selected-class");
+                }
             }
         }
     </script>
-
 </body>
 </html>
