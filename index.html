@@ -1,465 +1,512 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Occult AI Ritual : Grand Domain Expansion</title>
-    <style>
-        /* [기본 스타일] 오컬트/판타지 감성의 심연 배경 */
-        body {
-            margin: 0;
-            padding: 0;
-            background: radial-gradient(circle, #120720 0%, #05020a 100%);
-            color: #e2d5f0;
-            font-family: 'Cinzel', 'Noto Sans KR', serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-            transition: background 1s ease;
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #000000;
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 50%, rgba(123, 44, 191, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(199, 125, 255, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+            linear-gradient(135deg, rgba(123, 44, 191, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    svg#bg-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    div:first-child {
+        font-size: 2.5em;
+        margin-bottom: 30px;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.5), 0 0 20px rgba(123, 44, 191, 0.3);
+        font-weight: bold;
+        letter-spacing: 2px;
+        position: relative;
+        z-index: 10;
+    }
+
+    button {
+        background-color: #7b2cbf;
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.1em;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        position: relative;
+        z-index: 10;
+    }
+
+    button:hover {
+        background-color: #9d4edd;
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(157, 78, 221, 0.8);
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    button.hidden {
+        display: none;
+    }
+
+    #camera-section {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+        z-index: 10;
+    }
+
+    #camera-section.visible {
+        display: flex;
+    }
+
+    #gauge-container {
+        width: 300px;
+        height: 80px;
+        background-color: rgba(20, 20, 20, 0.8);
+        border: 2px solid #7b2cbf;
+        border-radius: 10px;
+        padding: 15px;
+        position: relative;
+        overflow: hidden;
+        display: none;
+    }
+
+    #gauge-container.visible {
+        display: block;
+    }
+
+    #gauge-class-name {
+        font-size: 1.2em;
+        color: #ffff00;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    #gauge-bar-container {
+        width: 100%;
+        height: 20px;
+        background-color: rgba(123, 44, 191, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    #gauge-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7b2cbf, #c77dff);
+        border-radius: 10px;
+        transition: width 0.1s linear;
+        box-shadow: 0 0 20px rgba(199, 125, 255, 0.8);
+    }
+
+    #domain-expansion {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: radial-gradient(circle, rgba(255, 0, 0, 0.4), transparent);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 9;
+    }
+
+    #domain-expansion.active {
+        animation: expandDomain 0.8s ease-out;
+    }
+
+    @keyframes expandDomain {
+        0% {
+            width: 0;
+            height: 0;
+            opacity: 1;
         }
-
-        /* 기본 마법진 광운 효과 */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, transparent 70%);
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 0; pointer-events: none;
-            transition: opacity 1s ease;
+        100% {
+            width: 150vw;
+            height: 150vh;
+            opacity: 0;
         }
+    }
 
-        /* ====================================================
-            👁️ 1. 무량공처 영역 전개 (Active) 스타일 
-        ==================================================== */
-        .void-background {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff;
-            background-image: 
-                radial-gradient(circle at 50% 50%, transparent 60%, #000 60.5%),
-                repeating-radial-gradient(circle at 50% 50%, #fff 0px, #fff 10px, #000 11px, #000 20px);
-            opacity: 0; z-index: 0; pointer-events: none;
-            transition: opacity 1.2s cubic-bezier(0.075, 0.82, 0.165, 1);
-            filter: contrast(50);
-        }
-        .black-hole {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 320px; height: 320px;
-            background: #000; border-radius: 50%; z-index: 1; pointer-events: none;
-            box-shadow: 0 0 0 15px #fff, 0 0 0 35px #000, 0 0 60px 50px rgba(255, 255, 255, 0.9);
-            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    #webcam-container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        z-index: 10;
+    }
 
-        body.void-active { background: #000 !important; color: #000 !important; }
-        body.void-active::before { opacity: 0; }
-        body.void-active .void-background { opacity: 1; }
-        body.void-active .black-hole { transform: translate(-50%, -50%) scale(1); animation: absorb 6s infinite linear; }
-        body.void-active .altar-container { background: rgba(255, 255, 255, 0.9); border: 5px double #000; box-shadow: 0 0 40px rgba(0, 0, 0, 0.8); color: #000; }
-        body.void-active #webcam-container { border-color: #000; box-shadow: 0 0 20px #000; }
-        body.void-active #label-container div { background: #fff; border: 1px solid #000; color: #000; }
-        body.void-active .selected-class { background: #000 !important; color: #fff !important; border-color: #000 !important; box-shadow: 0 0 15px #000 !important;}
+    #webcam-container canvas {
+        border: 3px solid #7b2cbf;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(123, 44, 191, 0.6), 0 0 50px rgba(157, 78, 221, 0.3);
+        max-width: 100%;
+        height: auto;
+    }
 
-        /* ====================================================
-            ⛩️ 2. 복마어주자 영역 전개 (Active) 스타일 
-        ==================================================== */
-        .shrine-background {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #200404 0%, #050000 100%);
-            opacity: 0; z-index: 0; pointer-events: none;
-            transition: opacity 1.2s ease;
-        }
-        .shrine-structure {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
-            width: 500px; height: 500px;
-            opacity: 0; z-index: 1; pointer-events: none;
-            transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-            filter: drop-shadow(0 0 30px #ff0033);
-        }
+    #label-container {
+        background-color: rgba(20, 20, 20, 0.8);
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: 2px solid #7b2cbf;
+        position: fixed;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        min-width: 280px;
+        display: none;
+    }
 
-        body.shrine-active { background: #050000 !important; }
-        body.shrine-active::before { opacity: 0; }
-        body.shrine-active .shrine-background { opacity: 1; }
-        body.shrine-active .shrine-structure { opacity: 0.35; transform: translate(-50%, -50%) scale(1.1); }
-        body.shrine-active .altar-container { background: rgba(15, 0, 0, 0.85); border: 2px solid #ff0033; box-shadow: 0 0 35px rgba(255, 0, 51, 0.4); color: #ffb3b3; }
-        body.shrine-active body > div:first-of-type { color: #ff0033; text-shadow: 0 0 10px #ff0033; }
-        body.shrine-active #webcam-container { border-color: #ff0033; box-shadow: 0 0 25px rgba(255, 0, 51, 0.6); }
-        body.shrine-active #label-container div { background: rgba(30, 5, 5, 0.8); border: 1px solid #ff0033; color: #ffcccc; }
-        body.shrine-active .selected-class { background: #ff0033 !important; color: #fff !important; border-color: #ff0033 !important; box-shadow: 0 0 25px #ff0033 !important;}
+    #label-container.visible {
+        display: block;
+    }
 
-        /* ====================================================
-            🐺 3. 간합암예정 영역 전개 (Active) 스타일 
-        ==================================================== */
-        .shadow-swamp {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #020617 0%, #090d16 50%, #020205 100%);
-            opacity: 0; z-index: 0; pointer-events: none;
-            transition: opacity 1s ease;
-        }
-        .shadow-waves {
-            position: absolute;
-            bottom: -50px; left: 0; width: 100%; height: 250px;
-            opacity: 0; z-index: 1; pointer-events: none;
-            fill: #000000;
-            filter: drop-shadow(0 -15px 25px rgba(13, 148, 136, 0.35));
-            transform: translateY(100px);
-            transition: all 1.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-        }
+    #label-container div {
+        font-size: 1.3em;
+        padding: 6px 0;
+        color: #ffff00;
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        border-bottom: 1px solid rgba(123, 44, 191, 0.3);
+    }
 
-        body.shadow-active { background: #020617 !important; }
-        body.shadow-active::before { opacity: 0; }
-        body.shadow-active .shadow-swamp { opacity: 1; }
-        body.shadow-active .shadow-waves { opacity: 0.85; transform: translateY(0); animation: wave-flow 4s infinite alternate ease-in-out; }
-        body.shadow-active .altar-container { background: rgba(4, 47, 46, 0.35); border: 2px solid #0d9488; box-shadow: 0 0 35px rgba(13, 148, 136, 0.5); color: #ccfbf1; }
-        body.shadow-active body > div:first-of-type { color: #2dd4bf; text-shadow: 0 0 15px rgba(45, 212, 191, 0.8); }
-        body.shadow-active #webcam-container { border-color: #0d9488; box-shadow: 0 0 30px rgba(13, 148, 136, 0.7); }
-        body.shadow-active #label-container div { background: rgba(2, 44, 43, 0.7); border: 1px solid #14b8a6; color: #99f6e4; }
-        body.shadow-active .selected-class { background: #0d9488 !important; color: #fff !important; border-color: #14b8a6 !important; box-shadow: 0 0 25px #0d9488 !important;}
+    #label-container div:last-child {
+        border-bottom: none;
+    }
 
-        @keyframes wave-flow {
-            0% { transform: scaleY(1) rotate(0deg); }
-            100% { transform: scaleY(1.15) cubic-bezier(0.445, 0.05, 0.55, 0.95) rotate(1deg); }
-        }
-        /* ==================================================== */
+    #label-container div.selected-class {
+        background: rgba(255, 0, 0, 0.15);
+        border-bottom: 1px solid #ff0000;
+        box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+        color: #ffffff;
+    }
 
-        /* 전체를 감싸는 오컬트 제단 컨테이너 */
-        .altar-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            text-align: center;
-            width: 100%;
-            max-width: 500px;
-            padding: 25px;
-            background: rgba(15, 7, 25, 0.4);
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(147, 51, 234, 0.2);
-            transition: all 1s ease;
-        }
+    /* 좌측 이미지 3종 (상단/중단/하단) */
+    .left-image {
+        position: fixed;
+        left: 40px;
+        width: 220px;
+        border: 2px solid #7b2cbf;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(123, 44, 191, 0.5);
+        overflow: hidden;
+        z-index: 10;
+        background-color: rgba(20, 20, 20, 0.8);
+        display: none;
+        transition: opacity 0.4s ease;
+    }
 
-        /* 타이틀 스타일 */
-        body > div:first-of-type {
-            font-size: 1.8rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #b794f4;
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
-            margin-bottom: 25px;
-            transition: all 1s ease;
-        }
+    .left-image.visible {
+        display: block;
+    }
 
-        /* 스타트 버튼 */
-        button {
-            background: rgba(20, 10, 35, 0.8);
-            color: #c084fc;
-            border: 2px solid #6b21a8;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            cursor: pointer;
-            border-radius: 30px;
-            box-shadow: 0 0 15px rgba(147, 51, 234, 0.4), inset 0 0 10px rgba(147, 51, 234, 0.2);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+    .left-image img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
 
-        button:hover {
-            color: #fff;
-            border-color: #a855f7;
-            box-shadow: 0 0 25px rgba(168, 85, 247, 0.8), inset 0 0 15px rgba(168, 85, 247, 0.4);
-            transform: scale(1.05);
-        }
+    #left-top {
+        top: 40px;
+        height: 180px;
+    }
 
-        /* 웹캠 컨테이너 */
-        #webcam-container {
-            margin-top: 25px;
-            border: 3px solid #4a1d96;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
-            transition: all 1s ease;
-            display: inline-block;
-        }
+    #left-middle {
+        top: 50%;
+        transform: translateY(-50%);
+        height: 180px;
+    }
 
-        #webcam-container canvas {
-            display: block;
-            transform: scaleX(-1);
-        }
+    #left-bottom {
+        bottom: 40px;
+        height: 180px;
+    }
+</style>
 
-        /* 마법 마나 게이지 바 */
-        .gauge-wrapper {
-            display: none;
-            width: 200px;
-            background: rgba(30, 15, 50, 0.6);
-            border: 1px solid #6b21a8;
-            height: 22px;
-            margin-top: 20px;
-            border-radius: 11px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(147, 51, 234, 0.4);
-        }
+<div>주술회전 영역전개 따라하기</div>
+<button id="startBtn" type="button" onclick="init()">Start</button>
 
-        #gauge-bar {
-            width: 0%; height: 100%;
-            background: linear-gradient(90deg, #a855f7, #ec4899);
-            box-shadow: 0 0 10px #ec4899;
-            transition: width 0.1s linear;
-        }
-
-        #gauge-text {
-            position: absolute;
-            width: 100%; text-align: center;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.75rem; color: #e2d5f0; font-weight: bold;
-            text-shadow: 1px 1px 2px #000;
-        }
-
-        /* 결과창 라벨 스타일 */
-        #label-container {
-            margin-top: 25px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        #label-container div {
-            background: rgba(15, 7, 25, 0.6);
-            border: 1px solid rgba(107, 33, 168, 0.5);
-            padding: 12px; border-radius: 8px;
-            font-size: 1rem; letter-spacing: 1px; color: #d8b4fe;
-            box-shadow: inset 0 0 10px rgba(147, 51, 234, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .selected-class {
-            border: 2px solid #ec4899 !important;
-            background: rgba(236, 72, 153, 0.25) !important;
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.6), inset 0 0 10px rgba(236, 72, 153, 0.3) !important;
-            color: #ffffff !important;
-        }
-
-        @keyframes absorb {
-            0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="void-background"></div>
-    <div class="black-hole"></div>
-
-    <div class="shrine-background"></div>
-    <div class="shrine-structure">
-        <svg viewBox="0 0 100 100" fill="#000000" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 90 H90 V95 H10 Z" />
-            <path d="M20 83 H80 V90 H20 Z" />
-            <path d="M32 45 H36 V83 H32 Z" />
-            <path d="M64 45 H68 V83 H64 Z" />
-            <path d="M48 45 H52 V83 H48 Z" />
-            <path d="M15 45 C 30 42, 70 42, 85 45 C 75 48, 25 48, 15 45 Z" />
-            <path d="M28 25 H72 V42 H28 Z" fill="#0c0101"/>
-            <path d="M38 25 H41 V42 H38 Z" />
-            <path d="M59 25 H62 V42 H59 Z" />
-            <path d="M5 23 C 25 10, 75 10, 95 23 C 80 20, 20 20, 5 23 Z" />
-            <path d="M45 5 H55 V20 H45 Z" />
-            <circle cx="50" cy="33" r="3" fill="#ff0033" />
-            <circle cx="43" cy="33" r="1.5" fill="#ff0033" />
-            <circle cx="57" cy="33" r="1.5" fill="#ff0033" />
-        </svg>
-    </div>
-
-    <div class="shadow-swamp"></div>
-    <svg class="shadow-waves" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,144C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-    </svg>
-
-    <div class="altar-container">
-        <div>Teachable Machine Image Model</div>
-        <button type="button" onclick="init()">Start</button>
-        <div id="webcam-container"></div>
-        
-        <div class="gauge-wrapper" id="gauge-wrapper">
-            <div id="gauge-bar"></div>
-            <div id="gauge-text">공명 대기 중...</div>
+<div id="camera-section">
+    <div id="webcam-container"></div>
+    <div id="gauge-container">
+        <div id="gauge-class-name">준비 중...</div>
+        <div id="gauge-bar-container">
+            <div id="gauge-bar-fill"></div>
         </div>
-
-        <div id="label-container"></div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script type="text/javascript">
-        const URL = "https://teachablemachine.withgoogle.com/models/evxCOgcOh/";
+<div id="label-container"></div>
+<div id="domain-expansion"></div>
 
-        let model, webcam, labelContainer, maxPredictions;
-        let currentTopClass = "";
-        let topClassStartTime = 0;
+<!-- 좌측 이미지 3종: src 경로를 원하는 이미지 파일로 교체하세요 -->
+<div class="left-image" id="left-top">
+    <img src="이미지1.jpg" alt="좌측 상단 이미지">
+</div>
+<div class="left-image" id="left-middle">
+    <img src="이미지2.jpg" alt="좌측 중단 이미지">
+</div>
+<div class="left-image" id="left-bottom">
+    <img src="이미지3.jpg" alt="좌측 하단 이미지">
+</div>
 
-        let isDomainActive = false;
-        let domainActivationTime = 0;
-        let activeDomainName = "";
+<!-- 배경 패턴 -->
+<svg id="bg-pattern" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+    <!-- 좌측 보라색 술식순전 아오 영역 -->
+    <defs>
+        <radialGradient id="purple-left" cx="0%" cy="50%">
+            <stop offset="0%" style="stop-color:#7b2cbf;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#7b2cbf;stop-opacity:0" />
+        </radialGradient>
+        <radialGradient id="purple-right" cx="100%" cy="50%">
+            <stop offset="0%" style="stop-color:#c77dff;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#c77dff;stop-opacity:0" />
+        </radialGradient>
+    </defs>
+    
+    <!-- 좌측 보라색 배경 -->
+    <circle cx="150" cy="500" r="250" fill="url(#purple-left)"/>
+    <circle cx="100" cy="300" r="120" fill="none" stroke="#7b2cbf" stroke-width="2" opacity="0.4"/>
+    <circle cx="100" cy="700" r="120" fill="none" stroke="#7b2cbf" stroke-width="2" opacity="0.4"/>
+    
+    <!-- 우측 보라색 배경 -->
+    <circle cx="850" cy="500" r="250" fill="url(#purple-right)"/>
+    <circle cx="900" cy="300" r="120" fill="none" stroke="#c77dff" stroke-width="2" opacity="0.4"/>
+    <circle cx="900" cy="700" r="120" fill="none" stroke="#c77dff" stroke-width="2" opacity="0.4"/>
+    
+    <!-- 중앙 원호 -->
+    <circle cx="500" cy="500" r="300" fill="none" stroke="#cc0000" stroke-width="2" opacity="0.3"/>
+    <circle cx="500" cy="500" r="250" fill="none" stroke="#cc0000" stroke-width="1.5" opacity="0.2"/>
+    <circle cx="500" cy="500" r="200" fill="none" stroke="#cc0000" stroke-width="1" opacity="0.15"/>
+    
+    <!-- 대각선 -->
+    <line x1="200" y1="200" x2="800" y2="800" stroke="#cc0000" stroke-width="1" opacity="0.2"/>
+    <line x1="800" y1="200" x2="200" y2="800" stroke="#cc0000" stroke-width="1" opacity="0.2"/>
+    
+    <!-- 코너 장식 (보라색) -->
+    <circle cx="80" cy="80" r="40" fill="none" stroke="#7b2cbf" stroke-width="2" opacity="0.4"/>
+    <circle cx="920" cy="80" r="40" fill="none" stroke="#c77dff" stroke-width="2" opacity="0.4"/>
+    <circle cx="80" cy="920" r="40" fill="none" stroke="#7b2cbf" stroke-width="2" opacity="0.4"/>
+    <circle cx="920" cy="920" r="40" fill="none" stroke="#c77dff" stroke-width="2" opacity="0.4"/>
+    
+    <!-- 기하학적 패턴 -->
+    <polygon points="500,200 700,350 700,650 500,800 300,650 300,350" fill="none" stroke="#cc0000" stroke-width="1" opacity="0.15"/>
+    
+    <!-- 좌우 원호 보라색 -->
+    <circle cx="150" cy="500" r="80" fill="none" stroke="#7b2cbf" stroke-width="2" opacity="0.3"/>
+    <circle cx="850" cy="500" r="80" fill="none" stroke="#c77dff" stroke-width="2" opacity="0.3"/>
+</svg>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
 
-        // 🗣️ [신규 함수] 브라우저 웹 스피치 API를 활용한 TTS 함수
-        function castSpellTTS(spellText) {
-            // 연속 호출 시 소리가 겹치지 않도록 이전 출력 초기화
-            window.speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(spellText);
-            utterance.lang = 'ko-KR'; // 한국어 설정
-            utterance.rate = 0.85;    // 약간 느린 영창 속도
-            utterance.pitch = 0.8;     // 가라앉은 주술적인 목소리 톤
-            
-            window.speechSynthesis.speak(utterance);
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "https://teachablemachine.withgoogle.com/models/SEnxXJhbA/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // 게이지바 관련 변수 (Date.now() 경과시간 기반)
+    let currentTopClass = null;
+    let topClassStartTime = 0;
+
+    // 영역전개 유지(홀드) 관련 변수
+    let isDomainActive = false;      // 영역전개 유지 중인지 여부
+    let domainActivationTime = 0;    // 영역전개가 발동된 시각
+    let lockedClassName = "";        // 유지 중인 영역의 클래스 이름
+
+    // 좌측 이미지 표시/숨김
+    function setLeftImagesVisible(visible) {
+        document.querySelectorAll('.left-image').forEach((el) => {
+            if (visible) {
+                el.classList.add('visible');
+            } else {
+                el.classList.remove('visible');
+            }
+        });
+    }
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // Start 버튼만 숨김
+        document.getElementById("startBtn").classList.add("hidden");
+        
+        // 카메라 섹션, 라벨 컨테이너, 게이지 컨테이너, 좌측 이미지 표시
+        document.getElementById("camera-section").classList.add("visible");
+        document.getElementById("label-container").classList.add("visible");
+        document.getElementById("gauge-container").classList.add("visible");
+        setLeftImagesVisible(true);
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
         }
+    }
 
-        async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
 
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
 
-            const flip = true; 
-            webcam = new tmImage.Webcam(200, 200, flip); 
-            await webcam.setup(); 
-            await webcam.play();
-            window.requestAnimationFrame(loop);
+        const gaugeFill = document.getElementById("gauge-bar-fill");
+        const gaugeLabel = document.getElementById("gauge-class-name");
 
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            document.getElementById("gauge-wrapper").style.display = "block";
-
-            labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) { 
-                labelContainer.appendChild(document.createElement("div"));
+        // 최고 확률 클래스 찾기
+        let highestIndex = 0;
+        let highestProbability = -1;
+        for (let i = 0; i < maxPredictions; i++) {
+            if (prediction[i].probability > highestProbability) {
+                highestProbability = prediction[i].probability;
+                highestIndex = i;
             }
         }
+        const highestClass = prediction[highestIndex].className;
 
-        async function loop() {
-            webcam.update(); 
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
+        if (isDomainActive) {
+            // ===== 영역전개 유지(홀드) 단계: 같은 게이지바로 10초 카운트다운 =====
+            const holdElapsed = Date.now() - domainActivationTime;
 
-        async function predict() {
-            const prediction = await model.predict(webcam.canvas);
-            const gaugeBar = document.getElementById("gauge-bar");
-            const gaugeText = document.getElementById("gauge-text");
+            if (holdElapsed >= 10000) {
+                // 10초 유지 종료 -> 초기화하고 다시 대기 상태로
+                isDomainActive = false;
+                currentTopClass = null;
+                lockedClassName = "";
+                gaugeFill.style.width = "0%";
+                gaugeLabel.textContent = "영역전개 중";
+                setLeftImagesVisible(true);
+            } else {
+                const remainingSeconds = Math.ceil((10000 - holdElapsed) / 1000);
+                const remainPercent = ((10000 - holdElapsed) / 10000) * 100;
+                gaugeFill.style.width = remainPercent + "%";
+                gaugeLabel.textContent = `영역 유지 중... ${remainingSeconds}s`;
+            }
+        } else {
+            // ===== 게이지 충전 단계 =====
 
-            if (isDomainActive) {
-                let activeElapsed = Date.now() - domainActivationTime;
-
-                if (activeElapsed >= 10000) {
-                    isDomainActive = false;
-                    currentTopClass = "";
+            // 비주술사는 쓰레기값을 모아놓은 클래스이므로 영역전개 발동 대상에서 제외
+            if (highestClass.includes("비주술사")) {
+                currentTopClass = null; // 다음에 실제 클래스가 잡히면 타이머를 새로 시작하도록 초기화
+                gaugeFill.style.width = "0%";
+                gaugeLabel.textContent = "영역전개 중";
+            } else {
+                // 최고 확률 클래스가 바뀌면 타이머 리셋
+                if (currentTopClass !== highestClass) {
+                    currentTopClass = highestClass;
                     topClassStartTime = Date.now();
-                    activeDomainName = "";
-                    document.body.classList.remove("void-active", "shrine-active", "shadow-active");
-                    
-                    // 10초 유지 시간이 종료되면 흘러나오는 보이스 강제 취소
-                    window.speechSynthesis.cancel();
-
-                    gaugeBar.style.width = "0%";
-                    gaugeText.innerHTML = "공명 대기 중...";
-                    gaugeBar.style.background = "linear-gradient(90deg, #a855f7, #ec4899)";
-                } else {
-                    let remainingSeconds = Math.ceil((10000 - activeElapsed) / 1000);
-                    gaugeText.innerHTML = `💥 영역 유지 중... ${remainingSeconds}s`;
-                    gaugeBar.style.width = ((10000 - activeElapsed) / 10000 * 100) + "%";
-                    gaugeBar.style.background = "linear-gradient(90deg, #ff0055, #9333ea)";
-                    
-                    for (let i = 0; i < maxPredictions; i++) {
-                        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                        labelContainer.childNodes[i].innerHTML = classPrediction;
-                        
-                        if (prediction[i].className === activeDomainName) {
-                            labelContainer.childNodes[i].classList.add("selected-class");
-                        } else {
-                            labelContainer.childNodes[i].classList.remove("selected-class");
-                        }
-                    }
-                    return; 
                 }
-            }
 
-            let highestIndex = 0;
-            let highestProbability = -1;
+                // 경과시간 기반 진행률 계산 (프레임마다 새로 계산하므로 오차 누적 없음)
+                const elapsed = Date.now() - topClassStartTime;
+                const progressPercent = Math.min((elapsed / 3000) * 100, 100);
 
-            for (let i = 0; i < maxPredictions; i++) {
-                if (prediction[i].probability > highestProbability) {
-                    highestProbability = prediction[i].probability;
-                    highestIndex = i;
-                }
-            }
+                gaugeFill.style.width = progressPercent + "%";
+                gaugeLabel.textContent = "영역전개 중";
 
-            let highestClass = prediction[highestIndex].className;
-
-            if (currentTopClass !== highestClass) {
-                currentTopClass = highestClass;
-                topClassStartTime = Date.now();
-            }
-
-            let elapsed = Date.now() - topClassStartTime;
-            let progressPercent = Math.min((elapsed / 5000) * 100, 100);
-
-            gaugeBar.style.width = progressPercent + "%";
-            gaugeText.innerHTML = `주력 동조 중... ${(elapsed / 1000).toFixed(1)}s`;
-            gaugeBar.style.background = "linear-gradient(90deg, #a855f7, #ec4899)";
-
-            let isLocked = elapsed >= 5000;
-
-            if (isLocked) {
-                // 🗣️ [TTS 연동 추가] 비주술사를 제외한 각 영역전개 발동 프레임에 대사 매칭
-                if (highestClass.includes("무량공처")) {
-                    document.body.classList.add("void-active");
+                // 3초 동안 같은 클래스가 유지되면 영역전개 발동
+                if (progressPercent >= 100) {
                     isDomainActive = true;
                     domainActivationTime = Date.now();
-                    activeDomainName = highestClass;
-                    castSpellTTS("영역 전개. 무량 공처.");
-                } 
-                else if (highestClass.includes("복마어주자")) {
-                    document.body.classList.add("shrine-active");
-                    isDomainActive = true;
-                    domainActivationTime = Date.now();
-                    activeDomainName = highestClass;
-                    castSpellTTS("영역 전개. 복마 어주 자.");
-                } 
-                else if (highestClass.includes("감함압예정")) {
-                    document.body.classList.add("shadow-active");
-                    isDomainActive = true;
-                    domainActivationTime = Date.now();
-                    activeDomainName = highestClass;
-                    castSpellTTS("영역 전개. 간합 암예 정.");
-                }
-                // 💡 "비주술사" 클래스는 위 조건문에 도달하지 않으므로 음성이 출력되지 않습니다.
-            }
+                    lockedClassName = highestClass;
 
-            for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-                labelContainer.childNodes[i].classList.remove("selected-class");
-
-                if (isLocked && i === highestIndex) {
-                    labelContainer.childNodes[i].classList.add("selected-class");
+                    triggerDomainExpansion();
+                    setLeftImagesVisible(false);
                 }
             }
         }
-    </script>
-</body>
-</html>
+
+        // 우측 라벨 컨테이너에 모든 클래스 정보 표시 + 강조 클래스 표시
+        // (유지 중일 때는 발동시킨 클래스를, 충전 중일 때는 현재 최고 확률 클래스를 강조)
+        const highlightClass = isDomainActive ? lockedClassName : highestClass;
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+
+            if (prediction[i].className === highlightClass) {
+                labelContainer.childNodes[i].classList.add("selected-class");
+            } else {
+                labelContainer.childNodes[i].classList.remove("selected-class");
+            }
+        }
+    }
+
+    // 영역전개 애니메이션
+    function triggerDomainExpansion() {
+        const domainExpansion = document.getElementById("domain-expansion");
+        domainExpansion.classList.remove("active");
+        
+        // 리플로우를 강제해서 애니메이션을 다시 시작
+        void domainExpansion.offsetWidth;
+        
+        domainExpansion.classList.add("active");
+    }
+</script>
